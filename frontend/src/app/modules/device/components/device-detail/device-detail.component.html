@@ -1,0 +1,347 @@
+<!-- Modal for setting the username/password before downloading the configuration -->
+<app-modal #modal></app-modal>
+<ng-template #modalContent>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">Device Credentials</h4>
+        <button type="button" class="btn-focus-grabber"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalChild.close()"></button>
+    </div>
+    <form [formGroup]="credentialsForm" (ngSubmit)="downloadConfig()">
+        <!-- Input section -->
+        <div class="modal-body">
+            <div class="form-group">
+                <fieldset>
+                    <label class="form-label">Username</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="username"
+                        [ngClass]="{'is-invalid': isControlInvalid(credentialsForm, 'username')}"
+                    >
+                </fieldset>
+            </div>
+            <div class="form-group">
+                <fieldset>
+                    <label class="form-label">Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        formControlName="password"
+                        [ngClass]="{'is-invalid': isControlInvalid(credentialsForm, 'password')}"
+                    >
+                </fieldset>
+            </div>
+        </div>
+        <!-- Buttons -->
+        <div class="modal-footer">
+            <button
+                type="submit"
+                class="btn btn-info"
+            >Download Configuration</button>
+            <button
+                (click)="modalChild.close()"
+                type="button"
+                class="btn btn-outline-dark"
+            >Close</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-container *ngIf="!deviceStore.loading">
+    <div class="row">
+        <div class="col">
+
+        </div>
+        <div class="col text-end">
+            <ng-container *ngIf="deviceId !== 'new'">
+                <button
+                    (click)="removeDevice()"
+                    type="button"
+                    class="btn btn-danger mx-1"
+                >
+                    Remove Device
+                </button>
+                <button
+                    (click)="this.modalChild.open(modalContent)"
+                    type="button"
+                    class="btn btn-info mx-1"
+                >
+                    Download Config</button>
+                </ng-container>
+                <button
+                    (click)="saveDevice()"
+                    type="button"
+                    class="btn btn-primary mx-1"
+                >
+                    Save Device
+                </button>
+        </div>
+    </div>
+    <form [formGroup]="editForm">
+        <fieldset>
+            <div class="row">
+                <!-- Device information column-->
+                <div class="col">
+                    <div class="form-group">
+                        <label for="name" class="form-label">
+                            Device Name <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="name"
+                            formControlName="name"
+                            [ngClass]="{'is-invalid': isControlInvalid(editForm, 'name')}"
+                        >
+                        <small class="form-text text-muted">A helpful name to help remember the Device</small>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" formControlName="description"></textarea>
+                        <small class="form-text text-muted">Device location or other descriptor</small>
+                    </div>
+                </div>
+
+                <!-- Sign column -->
+                <div class="col">
+                    <div class="form-group">
+                        <label for="name" class="form-label">
+                            Assigned Sign <span class="text-danger">*</span>
+                        </label>
+                        <select
+                            (change)="handleTaskTypeChange()"
+                            class="form-control"
+                            formControlName="signType"
+                            [ngClass]="{'is-invalid': isControlInvalid(editForm, 'signType')}"
+                        >
+                            <option
+                                disabled
+                                [ngValue]="null"
+                            >
+                                Select An Option
+                            </option>
+                            <ng-container *ngFor="let type of taskOptions">
+                                <option
+                                    [ngValue]="type.slug"
+                                >
+                                    {{ type.readable }}
+                                </option>
+                            </ng-container>
+                        </select>
+                        <small class="form-text text-muted">Sign type to assign to the device</small>
+                    </div>
+
+                    <!-- Web (Basic) -->
+                    <ng-container *ngIf="editForm.controls['signType'].value === taskTypes.WebBasic">
+                        <div class="form-group mt-2">
+                            <label for="url" class="form-label">
+                                URL <span class="text-danger">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="url"
+                                formControlName="url"
+                                placeholder="http://www.example.com"
+                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'url')}"
+                            />
+                            <small class="form-text text-muted">URL to load on the device</small>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label for="refreshTimer" class="form-label">
+                                Refresh Timer <small>(Minutes)</small>
+                            </label>
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="refreshTimer"
+                                formControlName="refreshTimer"
+                                placeholder="60"
+                            />
+                            <small class="form-text text-muted">Optional: Refresh the webpage at a predefined interval</small>
+                        </div>
+                    </ng-container>
+
+                    <!-- Web (Series) -->
+                    <ng-container *ngIf="editForm.controls['signType'].value === taskTypes.WebSeries">
+                        <div class="form-group mt-2">
+                            <!-- Column Headers -->
+                            <div class="row">
+                                <div class="col">
+                                    <label for="urls-1" class="form-label">
+                                        URLs <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label for="delays-1" class="form-label">
+                                        Delay
+                                        <small>(seconds)</small>
+                                        <span class="text-danger"> *</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Create a new row for each dynamic field added -->
+                            <ng-container *ngFor="let control of getWebSeriesControlList(); let i = index; trackBy: webSeriesControlTrackHandler">
+                                <div class="row mt-1" id="c-{{i}}">
+                                    <div class="col">
+                                        <!-- URL input -->
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="urls-{{ control.id }}"
+                                            formControlName="urls-{{ control.id }}"
+                                            placeholder="http://www.example.com"
+                                            [ngClass]="{'is-invalid': isControlInvalid(editForm, 'urls-' + control.id)}"
+                                        />
+                                    </div>
+                                    <div class="col">
+                                        <div class="input-group">
+                                            <!-- Delay input -->
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                id="delays-{{ control.id }}"
+                                                formControlName="delays-{{ control.id }}"
+                                                placeholder="60"
+                                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'delays-' + control.id)}"
+                                            />
+                                            <!-- Add button (if the first index) -->
+                                            <button
+                                                *ngIf="i === 0"
+                                                (click)="addWebSeriesControl()"
+                                                type="button"
+                                                class="btn btn-primary"
+                                            >
+                                                <fa-icon [icon]="icons.add"></fa-icon>
+                                            </button>
+                                            <!-- Removal button (if not the first index) -->
+                                            <button
+                                                *ngIf="i !== 0"
+                                                (click)="removeWebSeriesControl(control.id)"
+                                                type="button"
+                                                class="btn btn-primary"
+                                            >
+                                                <fa-icon [icon]="icons.remove"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+
+                    <!-- YouTube Task -->
+                    <ng-container *ngIf="editForm.controls['signType'].value === taskTypes.YouTube">
+                        <div class="form-group mt-2">
+                            <label for="youtubeVideoId" class="form-label">
+                                YouTube Video ID <span class="text-danger">*</span>
+                            </label>
+                            <!-- Video ID input -->
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="youtubeVideoId"
+                                formControlName="youtubeVideoId"
+                                placeholder="dQw4w9WgXcQ"
+                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'youtubeVideoId')}"
+                            />
+                            <small class="form-text text-muted">YouTube Video ID</small>
+                        </div>
+                    </ng-container>
+
+                    <!-- Google Slides -->
+                    <ng-container *ngIf="editForm.controls['signType'].value === taskTypes.GoogleSlides">
+                        <div class="form-group mt-2">
+                            <label for="slidesUrl" class="form-label">
+                                Google Slides URL <span class="text-danger">*</span>
+                            </label>
+                            <!-- Slides URL input -->
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="slidesUrl"
+                                formControlName="slidesUrl"
+                                placeholder="https://docs.google.com/presentation/d/..."
+                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'slidesUrl')}"
+                            />
+                            <small class="form-text text-muted">Google Slides public shareable URL</small>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label for="slideTimer" class="form-label">
+                                Slide Transition Timer <small>(Seconds)</small>
+                            </label>
+                            <!-- Slide Timer -->
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="slideTimer"
+                                formControlName="slideTimer"
+                                placeholder="60"
+                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'slideTimer')}"
+                            />
+                            <small class="form-text text-muted">Amount of time to view each slide until switching to the next one</small>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label for="loopType" class="form-label">
+                                Slide Loop Type
+                                <fa-icon
+                                    class="clickable"
+                                    [ngbPopover]="loopTypeContent"
+                                    popoverTitle="Loop Type Explanation"
+                                    triggers="mouseenter:mouseleave"
+                                    [icon]="icons.help"
+                                ></fa-icon>
+                            </label>
+                            <!-- Loop Type -->
+                            <select
+                                class="form-control"
+                                id="loopType"
+                                formControlName="loopType"
+                                [ngClass]="{'is-invalid': isControlInvalid(editForm, 'loopType')}"
+                            >
+                                <option [value]="null">Select An Option</option>
+                                <option
+                                    [selected]="editForm.get('loopType')?.value === 'loop'"
+                                    [ngValue]="'loop'"
+                                >Loop</option>
+                                <option
+                                    [selected]="editForm.get('loopType')?.value === 'reset'"
+                                    [ngValue]="'reset'"
+                                >Reset At Beginning</option>
+                            </select>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</ng-container>
+
+<app-spinner *ngIf="deviceStore.loading"></app-spinner>
+
+<!-- Popover content for Loop Type help popup -->
+<ng-template #loopTypeContent>
+    <ul>
+        <li>
+            <strong>Loop</strong>:
+            Loops through the slides from start to finish and back to the start
+            <ul>
+                <li>
+                    <strong>Order</strong>:
+                    1 -> 2 -> 3 -> 2 -> 1, etc
+                </li>
+            </ul>
+        </li>
+        <li>
+            <strong>Reset</strong>:
+            Loops through the slides from start to finish but restarts back at the first slide once finished
+            <ul>
+                <li>
+                    <strong>Order</strong>:
+                    1 -> 2 -> 3 -> 1 -> 2 -> 3, etc
+                </li>
+            </ul>
+        </li>
+    </ul>
+</ng-template>
+<ng-template #loopTypeTitle>Loop Type Explanation</ng-template>

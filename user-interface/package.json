@@ -1,0 +1,34 @@
+{
+  "name": "user-interface",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "",
+  "scripts": {
+    "lint": "eslint src",
+    "start": "nodemon --watch src src/app.js",
+    "build": "ncc build src/app.js --debug",
+    "package": "rimraf dist && yarn build && yarn post-build",
+    "copy-static": "cp -r services dist/ && cp -r scripts dist/scripts",
+    "post-build": "yarn copy-static && tar zcvf ui_package.tgz dist"
+  },
+  "author": "Michael King <@makvoid>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^3.2.3",
+    "node-fetch": "^3.2.4",
+    "p-retry": "^5.1.1",
+    "p-timeout": "^5.0.2",
+    "puppeteer": "^14.1.1",
+    "winston": "^3.7.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.33.4",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "nodemon": "^2.0.16",
+    "rimraf": "^3.0.2"
+  }
+}

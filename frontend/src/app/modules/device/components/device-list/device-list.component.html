@@ -1,0 +1,84 @@
+<ng-container *ngIf="!deviceStore.loading">
+    <div class="row">
+        <div class="col">
+            <!-- Add new button -->
+            <button
+                (click)="addNewDevice()"
+                class="btn btn-success"
+                type="button"
+            >
+                <fa-icon [icon]="icons.add"></fa-icon> Add New Device
+            </button>
+        </div>
+        <div class="col">
+            <form class="form-inline">
+                <div class="form-group">
+                    <!-- Search box -->
+                    <input
+                        [(ngModel)]="queryInput"
+                        name="query"
+                        type="text"
+                        class="form-control width-auto ml-a"
+                        placeholder="Device Search"
+                        (input)="refreshDevices()"
+                    />
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- List active devices -->
+    <table class="table table-striped table-response">
+        <thead>
+            <tr>
+                <th scope="col">Device Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Make a clickable row for each active Device -->
+            <tr
+                *ngFor="let device of paginatedDevices"
+                (click)="openDevice(device)"
+                title="Click to view"
+                class="clickable table-row-clickable"
+            >
+                <td title="{{ device.id }}">{{ device.name }}</td>
+                <td>{{ truncateString(device.description, 32) }}</td>
+                <td>{{ device.createdTime | date:'medium' }} ({{ device.createdTime | timeAgo }})</td>
+            </tr>
+            <tr *ngIf="!paginatedDevices.length">
+                <td colspan="5">
+                    <p class="text-center text-muted mt-3">No devices.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Pagination / num per page settings -->
+    <div class="p-2">
+        <div class="row">
+            <div class="col">
+                <ngb-pagination
+                    *ngIf="paginatedDevices.length"
+                    [collectionSize]="deviceStore.devices.length"
+                    [(page)]="page"
+                    [pageSize]="pageSize"
+                    (pageChange)="refreshDevices()"
+                >
+                </ngb-pagination>
+            </div>
+            <div class="col text-right">
+                <select
+                    class="form-select page-select"
+                    [(ngModel)]="pageSize"
+                    (ngModelChange)="refreshDevices()"
+                >
+                    <option [ngValue]="25">25 items per page</option>
+                    <option [ngValue]="50">50 items per page</option>
+                    <option [ngValue]="100">100 items per page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<app-spinner *ngIf="deviceStore.loading"></app-spinner>

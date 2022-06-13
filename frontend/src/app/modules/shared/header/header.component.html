@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" routerLink="/">Sign Manager</a>
+        <!-- Mobile navigation collapse button-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav me-auto">
+                <!-- Loop through each navigation link -->
+                <ng-container *ngFor="let link of navLinks">
+                    <li [ngClass]="{ dropdown: link.children?.length }" class="nav-item">
+                        <!-- If this is not a dropdown, just display the title-->
+                        <a *ngIf="!link.children?.length" routerLink="{{ link.link }}" [ngClass]="{ active: linkActive(link) }" class="nav-link">
+                            {{ link.title }}
+                        </a>
+                        <!-- If this is a dropdown, add some extra attributes to the link and add the dropdown -->
+                        <ng-container *ngIf="link.children?.length">
+                            <!-- Display the parent link -->
+                            <a [ngClass]="{ active: linkActive(link) }" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                {{ link.title }}
+                            </a>
+                            <!-- Display the dropdown links -->
+                            <div class="dropdown-menu">
+                                <ng-container *ngFor="let child of link.children">
+                                    <!-- If this child element is a divider, just display that-->
+                                    <div *ngIf="child.isDivider" class="dropdown-divider"></div>
+                                    <!-- If this child element is a normal link, display it-->
+                                    <a *ngIf="!child.isDivider" [ngClass]="{ active: linkActive(link) }" routerLink="{{ child.link }}" class="nav-link">
+                                        {{ child.title }}
+                                    </a>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </li>
+                </ng-container>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        {{ authStore.user.username }}
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" (click)="logout()">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

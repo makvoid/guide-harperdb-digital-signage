@@ -1,0 +1,24 @@
+#toast-container {
+    margin-top: 4rem;
+}
+.pull-block-right {
+    margin-left: auto;
+}
+.clickable { cursor: pointer; }
+.table-row-clickable:hover { background-color: #007eff1c; }
+.page-select {
+    margin-left: auto;
+    width: auto;
+}
+.width-auto {
+    width: auto;
+}
+.ml-a {
+    margin-left: auto;
+}
+.login-card {
+    max-width: 20rem;
+}
+.btn-focus-grabber {
+    display: none;
+}

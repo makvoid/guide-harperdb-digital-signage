@@ -1,0 +1,15 @@
+[Unit]
+Description=Digital Signage Unclutter Service
+After=network-online.target
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Service]
+Environment=DISPLAY=:0
+User=dietpi
+ExecStart=unclutter -idle 1 -root
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

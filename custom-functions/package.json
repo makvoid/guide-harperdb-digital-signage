@@ -1,0 +1,26 @@
+{
+  "name": "custom-functions",
+  "version": "1.0.0",
+  "description": "HarperDB Custom Functions for the Digital Signage system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makvoid/guide-harperdb-digital-signage.git"
+  },
+  "author": "Michael King <@makvoid>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/makvoid/guide-harperdb-digital-signage/issues"
+  },
+  "homepage": "https://github.com/makvoid/guide-harperdb-digital-signage#readme",
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0"
+  }
+}

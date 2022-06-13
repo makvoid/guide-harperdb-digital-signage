@@ -1,0 +1,45 @@
+<div class="card login-card mx-auto mt-3">
+    <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="submitForm()">
+            <h1 class="display-2 text-center">
+                <fa-icon [icon]="logoIcon"></fa-icon>
+            </h1>
+            <!-- Username -->
+            <div class="form-outline mb-2">
+                <input
+                [ngClass]="{'is-invalid': isControlInvalid('username')}"
+                    formControlName="username"
+                    placeholder="Username"
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    required
+                />
+            </div>
+            <!-- Password -->
+            <div class="form-outline mb-2">
+                <input
+                    [ngClass]="{'is-invalid': isControlInvalid('password')}"
+                    formControlName="password"
+                    placeholder="Password"
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    required
+                />
+            </div>
+            <!-- Login error -->
+            <div *ngIf="loginError" class="alert alert-danger mb-2">
+                Invalid credentials provided.
+            </div>
+            <div class="d-grid gap-2">
+                <button
+                    [disabled]="!form.valid"
+                    type="submit"
+                    class="btn btn-primary btn-block"
+                >
+                    Sign In</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<main>
+  <ng-container *ngIf="!authStore.loading">
+    <!-- Header-->
+    <app-header *ngIf="authStore.authenticated"></app-header>
+
+    <!-- Main Content-->
+    <div class="container mt-2">
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
+
+  <app-spinner *ngIf="authStore.loading" class="mt-5"></app-spinner>
+</main>

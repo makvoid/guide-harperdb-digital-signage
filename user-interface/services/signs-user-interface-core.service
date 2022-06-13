@@ -1,0 +1,17 @@
+[Unit]
+Description=Digital Signage Core Application Service
+After=network-online.target
+Requires=signs-user-interface-unclutter.service
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Service]
+Environment=DISPLAY=:0
+WorkingDirectory=/opt/signs-user-interface
+User=dietpi
+ExecStart=/home/dietpi/.config/nvm/versions/node/v14.19.1/bin/node index.js
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

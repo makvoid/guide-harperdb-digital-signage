@@ -1,0 +1,120 @@
+<!-- Modal for viewing detailed log information -->
+<app-modal #modal></app-modal>
+<ng-template #modalContent>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-title">View Log Details</h4>
+        <button type="button" class="btn-focus-grabber"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalChild.close()"></button>
+    </div>
+    <!-- Log details-->
+    <div class="modal-body" *ngIf="activeAlert">
+        <div class="form-group">
+            <fieldset>
+                <label class="form-label">Message</label>
+                <pre class="log-detail">{{ activeAlert.message }}</pre>
+            </fieldset>
+        </div>
+        <div class="form-group">
+            <fieldset>
+                <label class="form-label">Exception</label>
+                <pre class="log-detail">{{ activeAlert.exception }}</pre>
+            </fieldset>
+        </div>
+        <div class="form-group">
+            <fieldset>
+                <label class="form-label">Submitted At</label>
+                <pre class="log-detail">{{ activeAlert.createdTime | date:'medium' }}</pre>
+            </fieldset>
+        </div>
+        <div class="form-group" *ngIf="activeAlert?.trace">
+            <fieldset>
+                <label class="form-label">Trace</label>
+                <pre class="log-detail">{{ activeAlert.trace }}</pre>
+            </fieldset>
+        </div>
+    </div>
+    <!-- Buttons -->
+    <div class="modal-footer" *ngIf="activeAlert">
+        <button
+            (click)="viewDevice(activeAlert.deviceId)"
+            type="button"
+            class="btn btn-info"
+        >View Device</button>
+        <button
+            (click)="dismissAlert(activeAlert)"
+            type="button"
+            class="btn btn-warning"
+        >
+            Dismiss
+        </button>
+        <button
+            (click)="modalChild.close()"
+            type="button"
+            class="btn btn-outline-dark"
+        >Close</button>
+    </div>
+</ng-template>
+
+<!-- Latest Alerts Card -->
+<div class="card">
+    <div class="card-header">
+        Latest Alerts
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th scope="col">Device Name</th>
+                    <th scope="col">Message</th>
+                    <th scope="col">Exception</th>
+                    <th scope="col">Submitted At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Create a clickable table row for each alert -->
+                <tr
+                    *ngFor="let alert of paginatedAlerts"
+                    (click)="openAlert(alert, modalContent)"
+                    title="Click to view"
+                    class="clickable table-row-clickable"
+                >
+                    <td title="{{ alert.deviceId }}">{{ alert.deviceName }}</td>
+                    <td>{{ alert.message }}</td>
+                    <td>{{ alert.exception }}</td>
+                    <td>{{ alert.createdTime | date:'medium' }} ({{ alert.createdTime | timeAgo }})</td>
+                </tr>
+                <tr *ngIf="!paginatedAlerts.length">
+                    <td colspan="5">
+                        <p class="text-center text-muted mt-3">No alerts.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Pagination & page length settings -->
+        <div class="p-2">
+            <div class="row">
+                <div class="col">
+                    <ngb-pagination
+                        *ngIf="paginatedAlerts.length"
+                        [collectionSize]="alerts.length"
+                        [(page)]="page"
+                        [pageSize]="pageSize"
+                        (pageChange)="refreshAlerts()"
+                    >
+                    </ngb-pagination>
+                </div>
+                <div class="col text-right">
+                    <select
+                        class="form-select page-select"
+                        [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshAlerts()"
+                    >
+                        <option [ngValue]="25">25 items per page</option>
+                        <option [ngValue]="50">50 items per page</option>
+                        <option [ngValue]="100">100 items per page</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
