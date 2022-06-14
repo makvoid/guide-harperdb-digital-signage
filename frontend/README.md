@@ -9,8 +9,6 @@ Frontend for the Digital Signage system. This frontend will get built and packag
 yarn
 # Edit the environment file to include your Instance URL
 vim src/environments/environment.prod.ts
-# Build the Frontend
-npx ng build
 ```
 
 ---
