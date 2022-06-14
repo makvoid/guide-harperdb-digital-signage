@@ -10,7 +10,7 @@ User Interface for the Digital Signage system. Designed to be ran on a Raspberry
 # Install the required dependencies & package the user interface using ncc
 yarn && yarn package
 # Copy the package to the Device
-scp ui_package.tgz pi@10.0.0.1:/home/pi
+scp ui_package.tgz dietpi@10.0.0.1:/home/dietpi
 ```
 
 Optionally, you can package the User Interface on the Device itself versus on your local machine.
