@@ -36,7 +36,9 @@ export class HeaderComponent {
    */
   linkActive (link: NavLink) {
     if (!link.link) return false
-    if (link.link === '/') return window.location.pathname === link.link
+    // If this is the dashboard (home) route, check the deployed URL as well
+    // as HDB hosts our Frontend at /api/static
+    if (link.link === '/') return [link.link, '/api/static/'].includes(window.location.pathname)
     return window.location.pathname.includes(link.link)
   }
 }

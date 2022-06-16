@@ -13,7 +13,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/log/:logId',
     method: 'DELETE',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: (request) => {
       // Validate UUID provided
       if (!validateUUID(request.params.logId)) {
@@ -36,7 +36,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/heartbeat/:deviceId',
     method: 'GET',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: (request) => {
       // Validate UUID provided
       if (!validateUUID(request.params.deviceId)) {
@@ -65,7 +65,7 @@ module.exports = async (server, { hdbCore, logger }) => {
     url: '/signs/log',
     method: 'POST',
     preValidation: (request) => chainValidators([
-      validateBasicAuth(request, logger),
+      validateBasicAuth(request, hdbCore, logger),
       checkBody(['id', 'exception', 'description'], request, logger)
     ]),
     handler: (request) => {

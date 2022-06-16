@@ -42,6 +42,24 @@ const fileExists = async (path) => {
   return true
 }
 
+/**
+ * Returns a promise from execa and automatically pipes stdout/stderr to the current process
+ *
+ * @param {string} cmd command to run
+ * @param {string[]} args args to pass to command
+ * @returns Promise<ExecaChildProcess>
+ */
+const execPipe = async (cmd, args = []) => {
+  const promise = execa(cmd, args)
+
+  // Pipe child process stdout/stderr to the current process
+  // (or else we can't see the output)
+  promise.stdout.pipe(process.stdout)
+  promise.stderr.pipe(process.stderr)
+
+  return promise
+}
+
 const main = async () => {
   // Ensure the Frontend has been built and is available to copy
   if (!await fileExists(FRONTEND_BUILD_PATH)) {
@@ -50,19 +68,16 @@ const main = async () => {
     // Change to the frontend's directory and build the application
     process.chdir(path.resolve(__dirname, '../frontend'))
     try {
-      const promise = execa('npx', [
+      // Ensure the dependencies are installed beforehand
+      await execPipe('yarn')
+
+      // Run the build command
+      await execPipe('npx', [
         'ng',
         'build',
         '--base-href',
         `${HDB_CF_API_URL}/api/static/`
       ])
-
-      // Pipe process output to this process
-      promise.stdout.pipe(process.stdout)
-      promise.stderr.pipe(process.stderr)
-
-      // Wait for build to finish/error
-      await Promise.all([promise])
     } catch (e) {
       console.error(e)
       process.exit(1)

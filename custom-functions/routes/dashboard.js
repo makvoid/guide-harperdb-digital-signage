@@ -8,7 +8,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/dashboard',
     method: 'GET',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: async (request) => {
       // Some of these values we only want values from the last hour
       const startTime = new Date().getTime() - 3600 * 1000

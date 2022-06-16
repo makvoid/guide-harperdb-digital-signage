@@ -13,7 +13,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/device',
     method: 'GET',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: (request) => {
       // Return all devices configured
       request.body = {
@@ -29,7 +29,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/device/:deviceId',
     method: 'GET',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: async (request) => {
       // Get the device ID and validate
       const deviceId = request.params.deviceId
@@ -58,7 +58,7 @@ module.exports = async (server, { hdbCore, logger }) => {
     url: '/signs/device',
     method: 'POST',
     preValidation: (request) => chainValidators([
-      validateBasicAuth(request, logger),
+      validateBasicAuth(request, hdbCore, logger),
       checkBody(['name', 'sign'], request, logger)
     ]),
     handler: (request) => {
@@ -80,7 +80,7 @@ module.exports = async (server, { hdbCore, logger }) => {
     url: '/signs/device/:deviceId',
     method: 'POST',
     preValidation: (request) => chainValidators([
-      validateBasicAuth(request, logger),
+      validateBasicAuth(request, hdbCore, logger),
       checkBody(['name', 'sign'], request, logger)
     ]),
     handler: async (request) => {
@@ -107,7 +107,7 @@ module.exports = async (server, { hdbCore, logger }) => {
   server.route({
     url: '/signs/device/:deviceId',
     method: 'DELETE',
-    preValidation: (request) => validateBasicAuth(request, logger),
+    preValidation: (request) => validateBasicAuth(request, hdbCore, logger),
     handler: async (request) => {
       // Get the device ID and validate
       const deviceId = request.params.deviceId
