@@ -1,7 +1,5 @@
 'use strict'
 
-const postData = require('./postData')
-
 /**
  * Ensure the Basic Authentication parameters passed belong to a valid role
  *

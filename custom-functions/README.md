@@ -36,9 +36,6 @@ Allows the User to chain multiple validators, such as `checkBody` and `validateB
 ### checkBody
 Checks the request body for certain fields and errors if they are not present
 
-### postData
-Submits a POST request to a remote endpoint with a body value
-
 ### validateBasicAuth
 Takes the authentication information supplied by the User and checks it against the underlying HarperDB instance to ensure it is valid
 
