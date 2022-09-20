@@ -1,7 +1,7 @@
 # Introduction
 This repository holds the code for a Digital Signage project using HarperDB Custom Functions, Angular as a frontend and Puppeteer to display remote web resources. This system is designed to be ran on a microcomputer, like the Raspberry Pi and uses as little of resources as possible when displaying the signs. I recommend following the article I've written about this project, which you can find linked below as it contains some additional context.
 
-[Article Link](https://www.example.com)
+[Article Link](https://medium.com/gitconnected/building-a-digital-signage-system-using-harperdb-9f87ebe0849b)
 
 # Requirements
 * NodeJS v12+
